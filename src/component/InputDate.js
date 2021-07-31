@@ -1,42 +1,51 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import DateFnsUtils from '@date-io/date-fns';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { FormControl, InputLabel } from '@material-ui/core';
+import { FormHelperText } from '@material-ui/core';
 import { Controller } from 'react-hook-form';
 
-const InputDate = ({ name, helper, views, label, placeholder, format, register, required, control }) => {
+const InputDate = ({ name, control, materialUiProps, errors }) => {
 
-  const [viewYear, setViewYear] = useState()
-
-  useEffect(() => {
-    setViewYear(views)
-  }, [views])
-
-  const [selectedDate, handleDateChange] = useState(new Date());
-
-  // console.log(selectedDate)
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Controller
         name={name}
         control={control}
-        render={({ field: { ref, ...rest } }) => (
+        render={({ field }) => (
           <KeyboardDatePicker
-            views={viewYear}
-            value={selectedDate}
-            placeholder={placeholder}
-            onChange={handleDateChange}
-            disableFuture="true"
-            format={format}
-            KeyboardButtonProps={{
-              "aria-label": "change date"
-            }}
-            {...rest}
-            label={label}
+            {...field}
+            {...materialUiProps}
+            maxDateMessage='3'
+            minDateMessage='2'
+            invalidDateMessage='1'
+            error={Boolean(errors?.[name])}
+            helperText={errors?.[name]?.message}
           />
         )}
       />
+      <FormHelperText error={Boolean(errors?.[name])}>{errors?.[name]?.message}</FormHelperText>
     </MuiPickersUtilsProvider>
   )
 }
 export default InputDate
+
+  // <MuiPickersUtilsProvider utils = { DateFnsUtils } >
+  //   <Controller
+  //     control={control}
+  //     render={({ field: { ref, ...rest } }) => (
+  //       <KeyboardDatePicker
+  //         name={name}
+  //         format={format}
+  //         value={selectedDate}
+  //         placeholder={placeholder}
+  //         onChange={handleDateChange}
+  //         disableFuture="true"
+  //         KeyboardButtonProps={{
+  //           "aria-label": "change date"
+  //         }}
+  //         {...rest}
+  //         label={label}
+  //       />
+  //     )}
+  //   />
+  //   </MuiPickersUtilsProvider >

@@ -3,13 +3,42 @@ import TrangChu from './pages/TrangChu'
 import Layout from "./Layout/AppLayout";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@material-ui/core';
+import DataContextProvider from './contexts/DataContext';
 
 const theme = createTheme({
   overrides: {
     MuiInputLabel: {
+      shrink: {
+        transform: 'translate(0,0) scale(1)',
+      },
       root: {
         paddingBottom: '4px',
+        fontSize: '0.75rem',
+        fontWeight: '400',
+        lineHeight: '1',
+        letterSpacing: '0.00938em',
       },
+      outlined: {
+        transform: 'none',
+        '&$shrink': {
+          transform: 'none',
+        },
+      },
+      formControl: {
+        transform: 'none'
+      },
+      animated: {
+        transition: 'none'
+      }
+    },
+    MuiFormLabel: {
+      root: {
+        paddingBottom: '4px',
+        fontSize: '1rem',
+        fontWeight: '400',
+        lineHeight: '1',
+        letterSpacing: '0.00938em',
+      }
     },
     MuiFormControl: {
       root: {
@@ -25,6 +54,12 @@ const theme = createTheme({
           content: 'none'
         }
       },
+    },
+    MuiTextField: {
+      root: {
+        width: "100%",
+        borderRadius: '4px',
+      }
     },
     MuiInputBase: {
       root: {
@@ -64,8 +99,8 @@ const theme = createTheme({
       root: {
         margin: '0',
         bottom: '-1.5em',
-        position: 'absolute',
         fontSize: '0.75rem',
+        position: 'absolute',
         fontStyle: 'italic',
         marginTop: '0',
         textAlign: 'left',
@@ -74,7 +109,6 @@ const theme = createTheme({
         letterSpacing: '0.03333em',
       },
       contained: {
-        top: '27px',
         marginLeft: '0',
         marginRight: '0',
       }
@@ -128,17 +162,19 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        <Layout />
-        <Switch>
-          <Route exact path='/trangchu'>
-            <TrangChu />
-          </Route>
-          <Route exact path='/dangkylandau'>
-            <DangKyLanDau />
-          </Route>
-        </Switch>
-      </Router>
+      <DataContextProvider>
+        <Router>
+          <Layout />
+          <Switch>
+            <Route exact path='/trangchu'>
+              <TrangChu />
+            </Route>
+            <Route exact path='/dangkylandau'>
+              <DangKyLanDau />
+            </Route>
+          </Switch>
+        </Router>
+      </DataContextProvider>
     </ThemeProvider>
   );
 }

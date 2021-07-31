@@ -1,48 +1,27 @@
-import { FormControl, FormHelperText, InputBase, InputLabel } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import React from 'react'
-import { useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
-const InputField = ({ helper, label, register, required, name, validate }) => {
-
-  const { setError, formState: { errors } } = useForm()
-
-  React.useEffect(() => {
-    setError("lastName", {
-      types: {
-        required: "This is required",
-      }
-    });
-  }, [setError])
+const InputField = ({ name, control, rules, value, defaultValue = '', materialUiProps, errors, onChange }) => {
 
   return (
-    <FormControl>
-      <InputLabel shrink
-        // error={Boolean(errors?.lastName?.types)}
-        required={required}>
-        {label}
-      </InputLabel>
-      <InputBase
-        variant="outlined"
-        {...register(name, {
-          required: "This is required.",
-          validate: (value) => {
-            if (!value) {
-              return "This is validate required.";
-            }
-            return true;
-          }
-        })}
-        error={Boolean(errors?.lastName?.types)}
-      />
-
-      {errors.lastName && errors.lastName.types && (
-        <FormHelperText error={Boolean(errors?.lastName?.types)} >{errors.lastName.types.required}</FormHelperText>
+    <Controller
+      name={name}
+      control={control}
+      defaultValue={defaultValue}
+      value={value}
+      render={({ field, formState }) => (
+        <TextField
+          {...field}
+          {...materialUiProps}
+          onChange={onChange ? e => onChange(e, field) : e => field.onChange(e.target.value)}
+          error={Boolean(errors?.[name])}
+          helperText={errors?.[name]?.message}
+        />
       )}
-
-      {/* <FormHelperText variant="filled" error={Boolean(helper)} >{helper}</FormHelperText> */}
-
-    </FormControl>
-  )
+      rules={rules}
+    />
+  );
 }
 
 export default InputField

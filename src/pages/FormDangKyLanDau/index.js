@@ -1,13 +1,13 @@
 import { Button, Grid, makeStyles } from '@material-ui/core'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Divider from '../../component/Divider';
 import InputDate from '../../component/InputDate';
-import InputFiled from '../../component/InputField';
-import { useForm } from 'react-hook-form';
+import InputField from '../../component/InputField';
 import InputAutocomplete from '../../component/InputAutocomplete';
+import { useForm } from 'react-hook-form';
 import InputCheckbox from '../../component/InputCheckbox';
+import { DataContext } from '../../contexts/DataContext';
 
-let rendercount = 0
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,9 +39,15 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const FormDangKyLanDau = () => {
-  const { register, handleSubmit, trigger, control } = useForm({
-    criteriaMode: "all" // you will need to enable validate all criteria mode
+  const [valueDiaChi, setValueDiaChi] = useState({ quocGia: '', tinhThanh: '', quanHuyen: '', phuongXa: '' })
+
+  //loadContext
+  const { quocGiaData, tinhThanhData, noiCapData, quanHuyenData, phuongXaData, getQuanHuyen, getPhuongXa } = useContext(DataContext)
+
+  const { register, handleSubmit, control, formState: { errors } } = useForm({
+    mode: 'onBlur',
   })
+
   const classes = useStyles();
 
   const [checkbox, setCheckbox] = useState(false)
@@ -49,13 +55,37 @@ const FormDangKyLanDau = () => {
   const checkboxChange = () => {
     setCheckbox(!checkbox)
   }
+
+  const handleQuocGiaChange = (e, value) => {
+    console.log(value);
+    setValueDiaChi({ ...valueDiaChi, 'quocGia': value.ten })
+  }
+
+  const handleTinhThanhChange = (e, value) => {
+    console.log(value);
+    getQuanHuyen(value?.id);
+    setValueDiaChi({ ...valueDiaChi, 'tinhThanh': value.ten })
+  }
+
+  const handleQuanHuyenChange = (e, value) => {
+    console.log(value);
+    getPhuongXa(value?.id);
+    setValueDiaChi({ ...valueDiaChi, 'quanHuyen': value.ten })
+
+  }
+  const handlePhuongXaChange = (e, value) => {
+    console.log(value);
+    setValueDiaChi({ ...valueDiaChi, 'phuongXa': value.ten })
+  }
+
+  console.log(valueDiaChi)
+
   const onSubmit = (data) => {
     console.log(data);
   }
 
-  rendercount++
-
-  console.log(rendercount)
+  console.log(errors)
+  console.log(valueDiaChi.phuongXa + ', ' + valueDiaChi.quanHuyen + ', ' + valueDiaChi.tinhThanh + ', ' + valueDiaChi.quocGia)
 
   return (
     <div className={classes.root}>
@@ -71,59 +101,189 @@ const FormDangKyLanDau = () => {
               <Divider>Thông tin chủ sở hữu</Divider>
             </Grid>
             <Grid item xs={9}>
-              <InputFiled name='chuSoHuu' helper='' label='Chủ Sở Hữu' register={register} required />
+              <InputField
+                name='chuSoHuu'
+                control={control}
+                errors={errors}
+                materialUiProps={{
+                  inputProps: ({ maxLength: '50' }),
+                  label: "Chủ Sở Hữu"
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+                onChange={(e, field) => field.onChange(e.target.value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
+              />
             </Grid>
             <Grid item xs={3}>
-              <InputDate name='namSinh' helper='' label='Năm sinh' views={["year"]} register={register} required control={control} />
+              <InputDate
+                name='namSinh'
+                control={control}
+                errors={errors}
+                materialUiProps={{
+                  label: 'Năm sinh',
+                  views: ["year"],
+                  disableFuture: "true",
+                  format: 'yyyy'
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+              />
             </Grid>
-
             <Grid item xs={3}>
-              <InputAutocomplete name='quocGia' helper='' label='Quốc gia' register={register} required />
+              <InputAutocomplete
+                name='quocGia'
+                options={quocGiaData}
+                label='Quốc gia'
+                register={register}
+                errors={errors}
+                onChange={handleQuocGiaChange}
+              />
             </Grid>
             <Grid item xs={3}>
-              <InputAutocomplete name='thanhPho' helper='' label='Tỉnh/Thành phố' register={register} required />
+              <InputAutocomplete
+                name='thanhPho'
+                options={tinhThanhData}
+                label='Tỉnh/Thành phố'
+                register={register}
+                errors={errors}
+                onChange={handleTinhThanhChange}
+              />
             </Grid>
             <Grid item xs={3}>
-              <InputAutocomplete name='quanHuyen' helper='' label='Quận/Huyện' register={register} required />
+              <InputAutocomplete
+                name='quanHuyen'
+                label='Quận/Huyện'
+                options={quanHuyenData}
+                disabled={quanHuyenData.length === 0}
+                register={register}
+                errors={errors}
+                onChange={handleQuanHuyenChange}
+              />
             </Grid>
             <Grid item xs={3}>
-              <InputAutocomplete name='phuongXa' helper='' label='Phường/Xã' register={register} required />
+              <InputAutocomplete
+                name='phuongXa'
+                label='Phường/Xã'
+                options={phuongXaData}
+                disabled={phuongXaData.length === 0}
+                register={register}
+                errors={errors}
+                onChange={handlePhuongXaChange}
+              />
             </Grid>
 
             <Grid item xs={12}>
-              <InputFiled name='diaChi' helper='' label='Địa Chỉ' register={register} required />
+              <InputField
+                name='diaChi'
+                control={control}
+                errors={errors}
+                // value={valueDiaChi}
+                materialUiProps={{
+                  label: "Địa Chỉ"
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+              />
             </Grid>
 
             <Grid item xs={3}>
-              <InputFiled name='cccdChuXe' helper='' label='Số CCCD/CMND/Hộ chiếu của chủ xe' register={register} required />
+              <InputField
+                name='cccdChuXe'
+                control={control}
+                errors={errors}
+                materialUiProps={{
+                  label: 'Số CCCD/CMND/Hộ chiếu của chủ xe'
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+              />
             </Grid>
             <Grid item xs={3}>
-              <InputDate name='cccdChuXeCapNgay' helper='' label='Cấp ngày' format='dd/MM/yyyy' register={register} required control={control} />
+              <InputDate
+                name='cccdChuXeCapNgay'
+                control={control}
+                errors={errors}
+                materialUiProps={{
+                  label: 'Cấp ngày',
+                  format: 'dd/MM/yyyy',
+                  disableFuture: "true",
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+              />
             </Grid>
             <Grid item xs={3}>
-              <InputAutocomplete name='cccdChuXeNoiCap' helper='' label='Nơi cấp' register={register} required />
+              <InputAutocomplete options={noiCapData?.['result']} name='cccdChuXeNoiCap' helper='' label='Nơi cấp' register={register} errors={errors} />
             </Grid>
             <Grid item xs={3}>
-              <InputFiled name='sdtChuXe' helper='' label='Số điện thoại của chủ xe' register={register} required />
+              <InputField
+                name='sdtChuXe'
+                control={control}
+                errors={errors}
+                materialUiProps={{
+                  label: 'Số điện thoại của chủ xe'
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+              />
             </Grid>
 
             <Grid item xs={3}>
-              <InputFiled name='cccdNltt' helper='' label='Số CCCD/CMND/Hộ chiếu của NLTT' register={register} required />
+              <InputField
+                name='cccdNltt'
+                control={control}
+                errors={errors}
+                materialUiProps={{
+                  label: 'Số CCCD/CMND/Hộ chiếu của NLTT'
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+              />
             </Grid>
             <Grid item xs={3}>
-              <InputDate name='cccdNlttCapNgay' helper='' label='Cấp ngày' format='dd/MM/yyyy' register={register} required control={control} />
+              <InputDate
+                name='cccdNlttCapNgay'
+                control={control}
+                errors={errors}
+                materialUiProps={{
+                  label: 'Cấp ngày',
+                  format: 'dd/MM/yyyy',
+                  disableFuture: "true",
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+              />
             </Grid>
             <Grid item xs={3}>
-              <InputAutocomplete name='cccdNlttNoiCap' helper='' label='Nơi cấp' register={register} />
+              <InputAutocomplete options={noiCapData?.['result']} name='cccdNlttNoiCap' helper='' label='Nơi cấp' register={register} required errors={errors} />
             </Grid>
             <Grid item xs={3}>
-              <InputFiled name='sdtNltt' helper='' label='Số điện thoại của NLTT' register={register} required />
+              <InputField
+                name='sdtNltt'
+                control={control}
+                errors={errors}
+                materialUiProps={{
+                  label: 'Số điện thoại của NLTT'
+                }}
+                rules={{
+                  required: "Trường bắt buộc",
+                }}
+              />
             </Grid>
+
           </Grid>
 
           <Grid container>
-            {/* Thong tin xe */}
-            <Grid item xs={9}>
+
+            {/* <Grid item xs={9}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Divider>Thông tin xe</Divider>
@@ -162,10 +322,9 @@ const FormDangKyLanDau = () => {
                   <InputDate name='ngayDangKy' helper='' label='Ngày đăng ký' format='dd/MM/yyyy' register={register} required control={control} />
                 </Grid>
               </Grid>
-            </Grid>
+            </Grid> */}
 
-            {/* Thong tin bien so */}
-            <Grid item xs={3}>
+            {/* <Grid item xs={3}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Divider>Thông tin biển số</Divider>
@@ -181,7 +340,6 @@ const FormDangKyLanDau = () => {
                 {checkbox ? <Grid item xs={12}>
                   <InputAutocomplete name='khuKinhTe' helper='' label='Tên khu kinh tế ' register={register} required />
                 </Grid> : ''}
-                {/* {!checkbox && unregister("khuKinhTe")} */}
                 <Grid item xs={12}>
                   <InputAutocomplete name='bienTheoTinh' helper='' label='Đầu biển theo tỉnh' register={register} required />
                 </Grid>
@@ -195,20 +353,22 @@ const FormDangKyLanDau = () => {
                   <InputAutocomplete name='mauBien' helper='' label='Màu biển' register={register} required />
                 </Grid>
               </Grid>
-            </Grid>
+            </Grid> */}
+
           </Grid>
 
-          <Grid container>
-
+          <Grid container >
             <Grid container item justifyContent='center' spacing={3}>
               <Grid item>
-                <Button variant="contained" color="primary" type='submit' onClick={() => trigger()} >Cấp biển</Button>
+                <Button variant="contained" color="primary" type='submit' >Cấp biển</Button>
               </Grid>
               <Grid item>
                 <Button variant="outlined"  >Làm mới</Button>
               </Grid>
             </Grid>
           </Grid>
+
+
         </Grid>
       </form>
     </div>
