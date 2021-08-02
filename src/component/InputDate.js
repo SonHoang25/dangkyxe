@@ -28,24 +28,3 @@ const InputDate = ({ name, control, materialUiProps, errors }) => {
   )
 }
 export default InputDate
-
-  // <MuiPickersUtilsProvider utils = { DateFnsUtils } >
-  //   <Controller
-  //     control={control}
-  //     render={({ field: { ref, ...rest } }) => (
-  //       <KeyboardDatePicker
-  //         name={name}
-  //         format={format}
-  //         value={selectedDate}
-  //         placeholder={placeholder}
-  //         onChange={handleDateChange}
-  //         disableFuture="true"
-  //         KeyboardButtonProps={{
-  //           "aria-label": "change date"
-  //         }}
-  //         {...rest}
-  //         label={label}
-  //       />
-  //     )}
-  //   />
-  //   </MuiPickersUtilsProvider >

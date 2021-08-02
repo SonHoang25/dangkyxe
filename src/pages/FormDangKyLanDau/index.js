@@ -42,7 +42,7 @@ const FormDangKyLanDau = () => {
   const [valueDiaChi, setValueDiaChi] = useState({ quocGia: '', tinhThanh: '', quanHuyen: '', phuongXa: '' })
 
   //loadContext
-  const { quocGiaData, tinhThanhData, noiCapData, quanHuyenData, phuongXaData, getQuanHuyen, getPhuongXa } = useContext(DataContext)
+  const { quocGiaData, tinhThanhData, noiCapData, quanHuyenData, phuongXaData, getTinhThanh, getQuanHuyen, getPhuongXa, loaiXeData, nhanHieuData, khuKinhTeData, bienTheoTinhData, bienQuocGiaData, seriChuData, mauBienData } = useContext(DataContext)
 
   const { register, handleSubmit, control, formState: { errors } } = useForm({
     mode: 'onBlur',
@@ -57,35 +57,27 @@ const FormDangKyLanDau = () => {
   }
 
   const handleQuocGiaChange = (e, value) => {
-    console.log(value);
-    setValueDiaChi({ ...valueDiaChi, 'quocGia': value.ten })
+    getTinhThanh(value?.id);
+    setValueDiaChi({ ...valueDiaChi, 'quocGia': value?.ten })
   }
 
   const handleTinhThanhChange = (e, value) => {
-    console.log(value);
     getQuanHuyen(value?.id);
-    setValueDiaChi({ ...valueDiaChi, 'tinhThanh': value.ten })
+    setValueDiaChi({ ...valueDiaChi, 'tinhThanh': value?.ten })
   }
 
   const handleQuanHuyenChange = (e, value) => {
-    console.log(value);
     getPhuongXa(value?.id);
-    setValueDiaChi({ ...valueDiaChi, 'quanHuyen': value.ten })
-
+    setValueDiaChi({ ...valueDiaChi, 'quanHuyen': value?.ten })
   }
+
   const handlePhuongXaChange = (e, value) => {
-    console.log(value);
-    setValueDiaChi({ ...valueDiaChi, 'phuongXa': value.ten })
+    setValueDiaChi({ ...valueDiaChi, 'phuongXa': value?.ten })
   }
-
-  console.log(valueDiaChi)
 
   const onSubmit = (data) => {
     console.log(data);
   }
-
-  console.log(errors)
-  console.log(valueDiaChi.phuongXa + ', ' + valueDiaChi.quanHuyen + ', ' + valueDiaChi.tinhThanh + ', ' + valueDiaChi.quocGia)
 
   return (
     <div className={classes.root}>
@@ -136,8 +128,10 @@ const FormDangKyLanDau = () => {
                 name='quocGia'
                 options={quocGiaData}
                 label='Quốc gia'
+                optionLabel={option => option.ten}
                 register={register}
                 errors={errors}
+                control={control}
                 onChange={handleQuocGiaChange}
               />
             </Grid>
@@ -146,8 +140,11 @@ const FormDangKyLanDau = () => {
                 name='thanhPho'
                 options={tinhThanhData}
                 label='Tỉnh/Thành phố'
+                optionLabel={option => option.ten}
+                disabled={tinhThanhData.length === 0}
                 register={register}
                 errors={errors}
+                control={control}
                 onChange={handleTinhThanhChange}
               />
             </Grid>
@@ -156,9 +153,11 @@ const FormDangKyLanDau = () => {
                 name='quanHuyen'
                 label='Quận/Huyện'
                 options={quanHuyenData}
+                optionLabel={option => option.ten}
                 disabled={quanHuyenData.length === 0}
                 register={register}
                 errors={errors}
+                control={control}
                 onChange={handleQuanHuyenChange}
               />
             </Grid>
@@ -167,9 +166,11 @@ const FormDangKyLanDau = () => {
                 name='phuongXa'
                 label='Phường/Xã'
                 options={phuongXaData}
+                optionLabel={option => option.ten}
                 disabled={phuongXaData.length === 0}
                 register={register}
                 errors={errors}
+                control={control}
                 onChange={handlePhuongXaChange}
               />
             </Grid>
@@ -179,7 +180,6 @@ const FormDangKyLanDau = () => {
                 name='diaChi'
                 control={control}
                 errors={errors}
-                // value={valueDiaChi}
                 materialUiProps={{
                   label: "Địa Chỉ"
                 }}
@@ -218,7 +218,15 @@ const FormDangKyLanDau = () => {
               />
             </Grid>
             <Grid item xs={3}>
-              <InputAutocomplete options={noiCapData?.['result']} name='cccdChuXeNoiCap' helper='' label='Nơi cấp' register={register} errors={errors} />
+              <InputAutocomplete
+                options={noiCapData}
+                optionLabel={option => option.ten}
+                name='cccdChuXeNoiCap'
+                label='Nơi cấp'
+                register={register}
+                errors={errors}
+                control={control}
+              />
             </Grid>
             <Grid item xs={3}>
               <InputField
@@ -263,7 +271,16 @@ const FormDangKyLanDau = () => {
               />
             </Grid>
             <Grid item xs={3}>
-              <InputAutocomplete options={noiCapData?.['result']} name='cccdNlttNoiCap' helper='' label='Nơi cấp' register={register} required errors={errors} />
+              <InputAutocomplete
+                options={noiCapData}
+                optionLabel={option => option.ten}
+                name='cccdNlttNoiCap'
+                label='Nơi cấp'
+                register={register}
+                required
+                errors={errors}
+                control={control}
+              />
             </Grid>
             <Grid item xs={3}>
               <InputField
@@ -283,48 +300,146 @@ const FormDangKyLanDau = () => {
 
           <Grid container>
 
-            {/* <Grid item xs={9}>
+            <Grid item xs={9}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Divider>Thông tin xe</Divider>
                 </Grid>
                 <Grid item xs={4}>
-                  <InputFiled name='khaiLPTB' helper='' label="Mã hồ sơ khai LPTB" register={register} required />
+                  <InputField
+                    name='khaiLPTB'
+                    control={control}
+                    errors={errors}
+                    materialUiProps={{
+                      label: 'Mã hồ sơ khai LPTB'
+                    }}
+                    rules={{
+                      required: "Trường bắt buộc",
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={8}>
-                  <InputFiled name='coQuanCapLPTB' helper='' label="Cơ quan cấp" register={register} required />
+                  <InputAutocomplete
+                    options={noiCapData}
+                    optionLabel={option => option.ten}
+                    name='coQuanCapLPTB'
+                    label='Cơ quan cấp'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid>
 
                 <Grid item xs={4}>
-                  <InputFiled name='seriKTCLXX' helper='' label="Số Seri phiếu KTCLXX" register={register} required />
+                  <InputField
+                    name='seriKTCLXX'
+                    control={control}
+                    errors={errors}
+                    materialUiProps={{
+                      label: 'Số Seri phiếu KTCLXX'
+                    }}
+                    rules={{
+                      required: "Trường bắt buộc",
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={8}>
-                  <InputFiled name='coQuanCapKTCLXX' helper='' label="Cơ quan cấp" register={register} required />
+                  <InputAutocomplete
+                    options={noiCapData}
+                    optionLabel={option => option.ten}
+                    name='coQuanCapKTCLXX'
+                    label='Cơ quan cấp'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid>
 
                 <Grid item xs={4}>
-                  <InputAutocomplete name='loaiXe' helper='' label='Loại xe' register={register} />
+                  <InputAutocomplete
+                    options={loaiXeData}
+                    optionLabel={option => option.tenLoai}
+                    name='loaiXe'
+                    label='Loại xe'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid>
                 <Grid item xs={4}>
-                  <InputAutocomplete name='nhanHieu' helper='' label='Nhãn hiệu' register={register} />
+                  <InputAutocomplete
+                    options={nhanHieuData}
+                    optionLabel={option => option.ten}
+                    name='nhanHieu'
+                    label='Nhãn hiệu'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid>
                 <Grid item xs={4}>
-                  <InputFiled name='soKhung' helper='' label="Số khung" register={register} required />
+                  <InputField
+                    name='soKhung'
+                    control={control}
+                    errors={errors}
+                    materialUiProps={{
+                      label: 'Số khung'
+                    }}
+                    rules={{
+                      required: "Trường bắt buộc",
+                    }}
+                  />
                 </Grid>
 
                 <Grid item xs={4}>
-                  <InputFiled name='soMay1' helper='' label="Số máy 1" register={register} required />
+                  <InputField
+                    name='soMay1'
+                    control={control}
+                    errors={errors}
+                    materialUiProps={{
+                      label: 'Số máy 1'
+                    }}
+                    rules={{
+                      required: "Trường bắt buộc",
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={4}>
-                  <InputFiled name='soLoai' helper='' label="Số loại" register={register} required />
+                  <InputField
+                    name='soLoai'
+                    control={control}
+                    errors={errors}
+                    materialUiProps={{
+                      label: 'Số loại'
+                    }}
+                    rules={{
+                      required: "Trường bắt buộc",
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={4}>
-                  <InputDate name='ngayDangKy' helper='' label='Ngày đăng ký' format='dd/MM/yyyy' register={register} required control={control} />
+                  <InputDate
+                    name='ngayDangKy'
+                    control={control}
+                    errors={errors}
+                    materialUiProps={{
+                      label: 'Ngày đăng ký',
+                      format: 'dd/MM/yyyy',
+                      disableFuture: "true",
+                    }}
+                    rules={{
+                      required: "Trường bắt buộc",
+                    }}
+                  />
                 </Grid>
               </Grid>
-            </Grid> */}
+            </Grid>
 
-            {/* <Grid item xs={3}>
+            <Grid item xs={3}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Divider>Thông tin biển số</Divider>
@@ -338,22 +453,67 @@ const FormDangKyLanDau = () => {
                   />
                 </Grid>
                 {checkbox ? <Grid item xs={12}>
-                  <InputAutocomplete name='khuKinhTe' helper='' label='Tên khu kinh tế ' register={register} required />
+                  <InputAutocomplete
+                    options={khuKinhTeData}
+                    optionLabel={option => option.ten}
+                    name='khuKinhTe'
+                    label='Tên khu kinh tế'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid> : ''}
                 <Grid item xs={12}>
-                  <InputAutocomplete name='bienTheoTinh' helper='' label='Đầu biển theo tỉnh' register={register} required />
+                  <InputAutocomplete
+                    options={bienTheoTinhData}
+                    optionLabel={option => option.dauBienTheoTinh}
+                    name='bienTheoTinh'
+                    label='Đầu biển theo tỉnh'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid>
                 <Grid item xs={12}>
-                  <InputAutocomplete name='bienQuocGia' helper='' label='Đầu biển quốc gia' register={register} required />
+                  <InputAutocomplete
+                    options={bienQuocGiaData}
+                    optionLabel={option => option.dauBienQuocGia}
+                    name='bienQuocGia'
+                    label='Đầu biển quốc gia'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid>
                 <Grid item xs={12}>
-                  <InputAutocomplete name='seriChu' helper='' label='Seri chữ' register={register} required />
+                  <InputAutocomplete
+                    options={seriChuData}
+                    optionLabel={option => option.seriChu}
+                    name='seriChu'
+                    label='Seri chữ'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid>
                 <Grid item xs={12}>
-                  <InputAutocomplete name='mauBien' helper='' label='Màu biển' register={register} required />
+                  <InputAutocomplete
+                    options={mauBienData}
+                    optionLabel={option => option.dienGiai}
+                    name='mauBien'
+                    label='Màu biển'
+                    register={register}
+                    required
+                    errors={errors}
+                    control={control}
+                  />
                 </Grid>
               </Grid>
-            </Grid> */}
+            </Grid>
 
           </Grid>
 
@@ -363,7 +523,7 @@ const FormDangKyLanDau = () => {
                 <Button variant="contained" color="primary" type='submit' >Cấp biển</Button>
               </Grid>
               <Grid item>
-                <Button variant="outlined"  >Làm mới</Button>
+                <Button variant="outlined" >Làm mới</Button>
               </Grid>
             </Grid>
           </Grid>

@@ -10,7 +10,7 @@ const InputField = ({ name, control, rules, value, defaultValue = '', materialUi
       control={control}
       defaultValue={defaultValue}
       value={value}
-      render={({ field, formState }) => (
+      render={({ field }) => (
         <TextField
           {...field}
           {...materialUiProps}
