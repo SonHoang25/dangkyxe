@@ -7,6 +7,9 @@ import InputAutocomplete from '../../component/InputAutocomplete';
 import { useForm } from 'react-hook-form';
 import InputCheckbox from '../../component/InputCheckbox';
 import { DataContext } from '../../contexts/DataContext';
+// import { yupValidate } from '../../Yup';
+import { yupResolver } from '@hookform/resolvers/yup'
+import { yupValidate } from '../../Yup';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -39,13 +42,16 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const FormDangKyLanDau = () => {
-  const [valueDiaChi, setValueDiaChi] = useState({ quocGia: '', tinhThanh: '', quanHuyen: '', phuongXa: '' })
+  // const [valueDiaChi, setValueDiaChi] = useState({ quocGia: '', tinhThanh: '', quanHuyen: '', phuongXa: '' })
 
   //loadContext
   const { quocGiaData, tinhThanhData, noiCapData, quanHuyenData, phuongXaData, getTinhThanh, getQuanHuyen, getPhuongXa, loaiXeData, nhanHieuData, khuKinhTeData, bienTheoTinhData, bienQuocGiaData, seriChuData, mauBienData } = useContext(DataContext)
 
   const { register, handleSubmit, control, formState: { errors } } = useForm({
-    mode: 'onBlur',
+    mode: 'onBlur', reValidateMode: 'onChange', resolver: yupResolver(yupValidate),
+    defaultValues: {
+      quocGia: { value: 0, ten: 'Việt Nam' }
+    }
   })
 
   const classes = useStyles();
@@ -56,28 +62,30 @@ const FormDangKyLanDau = () => {
     setCheckbox(!checkbox)
   }
 
-  const handleQuocGiaChange = (e, value) => {
-    getTinhThanh(value?.id);
-    setValueDiaChi({ ...valueDiaChi, 'quocGia': value?.ten })
-  }
+  // const handleQuocGiaChange = (e, value) => {
+  //   getTinhThanh(value?.id);
+  //   setValueDiaChi({ ...valueDiaChi, 'quocGia': value?.ten })
+  // }
 
-  const handleTinhThanhChange = (e, value) => {
-    getQuanHuyen(value?.id);
-    setValueDiaChi({ ...valueDiaChi, 'tinhThanh': value?.ten })
-  }
+  // const handleTinhThanhChange = (e, value) => {
+  //   getQuanHuyen(value?.id);
+  //   setValueDiaChi({ ...valueDiaChi, 'tinhThanh': value?.ten })
+  // }
 
-  const handleQuanHuyenChange = (e, value) => {
-    getPhuongXa(value?.id);
-    setValueDiaChi({ ...valueDiaChi, 'quanHuyen': value?.ten })
-  }
+  // const handleQuanHuyenChange = (e, value) => {
+  //   getPhuongXa(value?.id);
+  //   setValueDiaChi({ ...valueDiaChi, 'quanHuyen': value?.ten })
+  // }
 
-  const handlePhuongXaChange = (e, value) => {
-    setValueDiaChi({ ...valueDiaChi, 'phuongXa': value?.ten })
-  }
+  // const handlePhuongXaChange = (e, value) => {
+  //   setValueDiaChi({ ...valueDiaChi, 'phuongXa': value?.ten })
+  // }
 
   const onSubmit = (data) => {
     console.log(data);
   }
+
+  console.log(errors)
 
   return (
     <div className={classes.root}>
@@ -101,10 +109,7 @@ const FormDangKyLanDau = () => {
                   inputProps: ({ maxLength: '50' }),
                   label: "Chủ Sở Hữu"
                 }}
-                rules={{
-                  required: "Trường bắt buộc",
-                }}
-                onChange={(e, field) => field.onChange(e.target.value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
+                onChange={(e, field) => field.onChange(e.target.value.toUpperCase())}
               />
             </Grid>
             <Grid item xs={3}>
@@ -129,10 +134,7 @@ const FormDangKyLanDau = () => {
                 options={quocGiaData}
                 label='Quốc gia'
                 optionLabel={option => option.ten}
-                register={register}
-                errors={errors}
                 control={control}
-                onChange={handleQuocGiaChange}
               />
             </Grid>
             <Grid item xs={3}>
@@ -141,11 +143,7 @@ const FormDangKyLanDau = () => {
                 options={tinhThanhData}
                 label='Tỉnh/Thành phố'
                 optionLabel={option => option.ten}
-                disabled={tinhThanhData.length === 0}
-                register={register}
-                errors={errors}
                 control={control}
-                onChange={handleTinhThanhChange}
               />
             </Grid>
             <Grid item xs={3}>
@@ -154,11 +152,7 @@ const FormDangKyLanDau = () => {
                 label='Quận/Huyện'
                 options={quanHuyenData}
                 optionLabel={option => option.ten}
-                disabled={quanHuyenData.length === 0}
-                register={register}
-                errors={errors}
                 control={control}
-                onChange={handleQuanHuyenChange}
               />
             </Grid>
             <Grid item xs={3}>
@@ -167,11 +161,8 @@ const FormDangKyLanDau = () => {
                 label='Phường/Xã'
                 options={phuongXaData}
                 optionLabel={option => option.ten}
-                disabled={phuongXaData.length === 0}
                 register={register}
-                errors={errors}
                 control={control}
-                onChange={handlePhuongXaChange}
               />
             </Grid>
 
@@ -182,9 +173,6 @@ const FormDangKyLanDau = () => {
                 errors={errors}
                 materialUiProps={{
                   label: "Địa Chỉ"
-                }}
-                rules={{
-                  required: "Trường bắt buộc",
                 }}
               />
             </Grid>
@@ -197,9 +185,7 @@ const FormDangKyLanDau = () => {
                 materialUiProps={{
                   label: 'Số CCCD/CMND/Hộ chiếu của chủ xe'
                 }}
-                rules={{
-                  required: "Trường bắt buộc",
-                }}
+                onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
               />
             </Grid>
             <Grid item xs={3}>
@@ -212,9 +198,6 @@ const FormDangKyLanDau = () => {
                   format: 'dd/MM/yyyy',
                   disableFuture: "true",
                 }}
-                rules={{
-                  required: "Trường bắt buộc",
-                }}
               />
             </Grid>
             <Grid item xs={3}>
@@ -224,7 +207,6 @@ const FormDangKyLanDau = () => {
                 name='cccdChuXeNoiCap'
                 label='Nơi cấp'
                 register={register}
-                errors={errors}
                 control={control}
               />
             </Grid>
@@ -235,9 +217,6 @@ const FormDangKyLanDau = () => {
                 errors={errors}
                 materialUiProps={{
                   label: 'Số điện thoại của chủ xe'
-                }}
-                rules={{
-                  required: "Trường bắt buộc",
                 }}
               />
             </Grid>
@@ -250,9 +229,7 @@ const FormDangKyLanDau = () => {
                 materialUiProps={{
                   label: 'Số CCCD/CMND/Hộ chiếu của NLTT'
                 }}
-                rules={{
-                  required: "Trường bắt buộc",
-                }}
+                onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
               />
             </Grid>
             <Grid item xs={3}>
@@ -264,9 +241,6 @@ const FormDangKyLanDau = () => {
                   label: 'Cấp ngày',
                   format: 'dd/MM/yyyy',
                   disableFuture: "true",
-                }}
-                rules={{
-                  required: "Trường bắt buộc",
                 }}
               />
             </Grid>
@@ -290,9 +264,6 @@ const FormDangKyLanDau = () => {
                 materialUiProps={{
                   label: 'Số điện thoại của NLTT'
                 }}
-                rules={{
-                  required: "Trường bắt buộc",
-                }}
               />
             </Grid>
 
@@ -313,9 +284,6 @@ const FormDangKyLanDau = () => {
                     materialUiProps={{
                       label: 'Mã hồ sơ khai LPTB'
                     }}
-                    rules={{
-                      required: "Trường bắt buộc",
-                    }}
                   />
                 </Grid>
                 <Grid item xs={8}>
@@ -325,8 +293,6 @@ const FormDangKyLanDau = () => {
                     name='coQuanCapLPTB'
                     label='Cơ quan cấp'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid>
@@ -339,9 +305,6 @@ const FormDangKyLanDau = () => {
                     materialUiProps={{
                       label: 'Số Seri phiếu KTCLXX'
                     }}
-                    rules={{
-                      required: "Trường bắt buộc",
-                    }}
                   />
                 </Grid>
                 <Grid item xs={8}>
@@ -351,8 +314,6 @@ const FormDangKyLanDau = () => {
                     name='coQuanCapKTCLXX'
                     label='Cơ quan cấp'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid>
@@ -364,8 +325,6 @@ const FormDangKyLanDau = () => {
                     name='loaiXe'
                     label='Loại xe'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid>
@@ -376,8 +335,6 @@ const FormDangKyLanDau = () => {
                     name='nhanHieu'
                     label='Nhãn hiệu'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid>
@@ -389,9 +346,7 @@ const FormDangKyLanDau = () => {
                     materialUiProps={{
                       label: 'Số khung'
                     }}
-                    rules={{
-                      required: "Trường bắt buộc",
-                    }}
+                    onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
                   />
                 </Grid>
 
@@ -403,9 +358,7 @@ const FormDangKyLanDau = () => {
                     materialUiProps={{
                       label: 'Số máy 1'
                     }}
-                    rules={{
-                      required: "Trường bắt buộc",
-                    }}
+                    onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
                   />
                 </Grid>
                 <Grid item xs={4}>
@@ -416,9 +369,7 @@ const FormDangKyLanDau = () => {
                     materialUiProps={{
                       label: 'Số loại'
                     }}
-                    rules={{
-                      required: "Trường bắt buộc",
-                    }}
+                    onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
                   />
                 </Grid>
                 <Grid item xs={4}>
@@ -430,9 +381,6 @@ const FormDangKyLanDau = () => {
                       label: 'Ngày đăng ký',
                       format: 'dd/MM/yyyy',
                       disableFuture: "true",
-                    }}
-                    rules={{
-                      required: "Trường bắt buộc",
                     }}
                   />
                 </Grid>
@@ -459,8 +407,6 @@ const FormDangKyLanDau = () => {
                     name='khuKinhTe'
                     label='Tên khu kinh tế'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid> : ''}
@@ -471,8 +417,6 @@ const FormDangKyLanDau = () => {
                     name='bienTheoTinh'
                     label='Đầu biển theo tỉnh'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid>
@@ -483,8 +427,6 @@ const FormDangKyLanDau = () => {
                     name='bienQuocGia'
                     label='Đầu biển quốc gia'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid>
@@ -495,8 +437,6 @@ const FormDangKyLanDau = () => {
                     name='seriChu'
                     label='Seri chữ'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid>
@@ -507,8 +447,6 @@ const FormDangKyLanDau = () => {
                     name='mauBien'
                     label='Màu biển'
                     register={register}
-                    required
-                    errors={errors}
                     control={control}
                   />
                 </Grid>

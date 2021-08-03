@@ -71,6 +71,7 @@ const theme = createTheme({
         borderRadius: '4px',
       },
       input: {
+        // font: '-webkit-control',
         padding: '6px 6px 7px 6px'
       }
     },

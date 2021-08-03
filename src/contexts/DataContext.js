@@ -37,8 +37,6 @@ const DataContextProvider = ({ children }) => {
       .then(response => response.json())
       .then(data => setLoaiXeData(data.result))
       .catch(error => console.log('error', error));
-
-    console.log(loaiXeData)
   }, [])
 
   useEffect(() => {

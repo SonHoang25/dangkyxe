@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import DateFnsUtils from '@date-io/date-fns';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { FormHelperText } from '@material-ui/core';
 import { Controller } from 'react-hook-form';
 
 const InputDate = ({ name, control, materialUiProps, errors }) => {
+  const [selectedDate, setSelectedDate] = useState(null)
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date)
+  }
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -15,15 +19,16 @@ const InputDate = ({ name, control, materialUiProps, errors }) => {
           <KeyboardDatePicker
             {...field}
             {...materialUiProps}
-            maxDateMessage='3'
-            minDateMessage='2'
-            invalidDateMessage='1'
+            value={selectedDate}
+            // maxDateMessage='3'
+            // minDateMessage='2'
+            // invalidDateMessage='1'
+            onChange={handleDateChange}
             error={Boolean(errors?.[name])}
             helperText={errors?.[name]?.message}
           />
         )}
       />
-      <FormHelperText error={Boolean(errors?.[name])}>{errors?.[name]?.message}</FormHelperText>
     </MuiPickersUtilsProvider>
   )
 }
