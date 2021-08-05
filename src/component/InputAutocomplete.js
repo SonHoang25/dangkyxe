@@ -2,27 +2,28 @@ import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { Controller } from 'react-hook-form';
 
-const InputAutocomplete = ({ label, name, value, disabled, control, options, optionLabel, onChange = () => { } }) => {
-
+const InputAutocomplete = ({ label, name, control, optionsData, shouldUnregister }) => {
 
   return (
     <Controller
       control={control}
       name={name}
       render={({
-        field,
+        field: { onBlur, onChange, ref, value },
         fieldState: { error }
       }) => (
         <Autocomplete
-          {...field}
-          options={options}
-          getOptionLabel={optionLabel}
-          getOptionSelected={(selectedOption, currentOption) =>
+          onBlur={onBlur}
+          value={value}
+          options={optionsData ? optionsData : []}
+          getOptionLabel={option => option.label}
+          getOptionSelected={(selectedOption, currentOption) => (
             selectedOption?.value === currentOption?.value
-          }
-          disabled={options.length === 0}
+          )}
+          disabled={optionsData?.length === 0}
+          loadingText='Đang tải...'
+          noOptionsText='Không có dữ liệu'
           autoHighlight={true}
-          autoComplete={true}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -32,11 +33,13 @@ const InputAutocomplete = ({ label, name, value, disabled, control, options, opt
               helperText={error && error.message}
             />
           )}
+          onChange={(e, option) => {
+            onChange(option);
+          }}
         />
       )}
+      shouldUnregister={shouldUnregister}
     />
   )
 }
-
-
 export default InputAutocomplete

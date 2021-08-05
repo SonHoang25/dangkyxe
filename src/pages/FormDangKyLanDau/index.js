@@ -7,7 +7,6 @@ import InputAutocomplete from '../../component/InputAutocomplete';
 import { useForm } from 'react-hook-form';
 import InputCheckbox from '../../component/InputCheckbox';
 import { DataContext } from '../../contexts/DataContext';
-// import { yupValidate } from '../../Yup';
 import { yupResolver } from '@hookform/resolvers/yup'
 import { yupValidate } from '../../Yup';
 
@@ -45,14 +44,41 @@ const FormDangKyLanDau = () => {
   // const [valueDiaChi, setValueDiaChi] = useState({ quocGia: '', tinhThanh: '', quanHuyen: '', phuongXa: '' })
 
   //loadContext
-  const { quocGiaData, tinhThanhData, noiCapData, quanHuyenData, phuongXaData, getTinhThanh, getQuanHuyen, getPhuongXa, loaiXeData, nhanHieuData, khuKinhTeData, bienTheoTinhData, bienQuocGiaData, seriChuData, mauBienData } = useContext(DataContext)
+  const { quocGiaData, tinhThanhData, noiCapData, quanHuyenData, phuongXaData, getTinhThanh, getQuanHuyen, getPhuongXa, loaiXeData, nhanHieuData, khuKinhTeData, bienTheoTinhData, bienQuocGiaData, seriChuData, mauBienData, coQuanCapLPTB, coQuanCapKTCLXX } = useContext(DataContext)
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm({
-    mode: 'onBlur', reValidateMode: 'onChange', resolver: yupResolver(yupValidate),
+  const { register, handleSubmit, control, formState: { errors }, watch } = useForm({
+    mode: 'onBlur', reValidateMode: 'onChange', shouldFocusError: true, resolver: yupResolver(yupValidate),
     defaultValues: {
-      quocGia: { value: 0, ten: 'Việt Nam' }
+      quocGia: { value: 1, label: "Việt Nam" },
+      namSinh: null,
+      diaChi: '',
+      cccdChuXeCapNgay: null,
+      // cccdChuXeNoiCap: {},
+      sdtChuXe: '',
+      cccdNltt: '',
+      cccdNlttCapNgay: null,
+      // cccdNlttNoiCap: {},
+      sdtNltt: '',
+      khaiLPTB: '',
+      coQuanCapLPTB: { value: 329, label: "Tổng cục thuế" },
+      seriKTCLXX: '',
+      coQuanCapKTCLXX: { value: 330, label: "Cục đăng kiểm" },
+      // loaiXe: {},
+      // nhanHieu: {},
+      soKhung: '',
+      soMay1: '',
+      soLoai: '',
+      ngayDangKy: Date(),
+      kttmDacBiet: '',
+      khuKinhTe: { value: 201, label: "Lao Bảo" },
+      bienTheoTinh: { value: 17, label: '29' },
+      bienQuocGia: { value: 41, label: '0' },
+      seriChu: { value: 238, label: 'LB' },
+      // mauBien: {},
     }
   })
+
+  console.log(watch('quocGia'))
 
   const classes = useStyles();
 
@@ -106,10 +132,11 @@ const FormDangKyLanDau = () => {
                 control={control}
                 errors={errors}
                 materialUiProps={{
-                  inputProps: ({ maxLength: '50' }),
+                  inputProps: { textTransform: 'uppercase', style: { textTransform: "uppercase" } },
                   label: "Chủ Sở Hữu"
                 }}
-                onChange={(e, field) => field.onChange(e.target.value.toUpperCase())}
+                // onChange={(e, field) => field.onChange(e.target.value.toUpperCase())}
+                updateString={(e, onChange) => onChange(e.target.value.toUpperCase())}
               />
             </Grid>
             <Grid item xs={3}>
@@ -120,29 +147,23 @@ const FormDangKyLanDau = () => {
                 materialUiProps={{
                   label: 'Năm sinh',
                   views: ["year"],
-                  disableFuture: "true",
-                  format: 'yyyy'
-                }}
-                rules={{
-                  required: "Trường bắt buộc",
+                  format: 'yyyy',
                 }}
               />
             </Grid>
             <Grid item xs={3}>
               <InputAutocomplete
                 name='quocGia'
-                options={quocGiaData}
+                optionsData={quocGiaData}
                 label='Quốc gia'
-                optionLabel={option => option.ten}
                 control={control}
               />
             </Grid>
             <Grid item xs={3}>
               <InputAutocomplete
                 name='thanhPho'
-                options={tinhThanhData}
+                optionsData={tinhThanhData}
                 label='Tỉnh/Thành phố'
-                optionLabel={option => option.ten}
                 control={control}
               />
             </Grid>
@@ -150,8 +171,7 @@ const FormDangKyLanDau = () => {
               <InputAutocomplete
                 name='quanHuyen'
                 label='Quận/Huyện'
-                options={quanHuyenData}
-                optionLabel={option => option.ten}
+                optionsData={quanHuyenData}
                 control={control}
               />
             </Grid>
@@ -159,8 +179,7 @@ const FormDangKyLanDau = () => {
               <InputAutocomplete
                 name='phuongXa'
                 label='Phường/Xã'
-                options={phuongXaData}
-                optionLabel={option => option.ten}
+                optionsData={phuongXaData}
                 register={register}
                 control={control}
               />
@@ -172,6 +191,7 @@ const FormDangKyLanDau = () => {
                 control={control}
                 errors={errors}
                 materialUiProps={{
+                  inputProps: ({ maxLength: '200' }),
                   label: "Địa Chỉ"
                 }}
               />
@@ -183,9 +203,10 @@ const FormDangKyLanDau = () => {
                 control={control}
                 errors={errors}
                 materialUiProps={{
+                  inputProps: ({ maxLength: '15', style: { textTransform: "uppercase" } }),
                   label: 'Số CCCD/CMND/Hộ chiếu của chủ xe'
                 }}
-                onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
+                updateString={(e, onChange) => onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
               />
             </Grid>
             <Grid item xs={3}>
@@ -202,8 +223,7 @@ const FormDangKyLanDau = () => {
             </Grid>
             <Grid item xs={3}>
               <InputAutocomplete
-                options={noiCapData}
-                optionLabel={option => option.ten}
+                optionsData={noiCapData}
                 name='cccdChuXeNoiCap'
                 label='Nơi cấp'
                 register={register}
@@ -216,6 +236,7 @@ const FormDangKyLanDau = () => {
                 control={control}
                 errors={errors}
                 materialUiProps={{
+                  inputProps: ({ maxLength: '13' }),
                   label: 'Số điện thoại của chủ xe'
                 }}
               />
@@ -227,9 +248,10 @@ const FormDangKyLanDau = () => {
                 control={control}
                 errors={errors}
                 materialUiProps={{
+                  inputProps: ({ maxLength: '15', style: { textTransform: "uppercase" } }),
                   label: 'Số CCCD/CMND/Hộ chiếu của NLTT'
                 }}
-                onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
+                updateString={(e, onChange) => onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
               />
             </Grid>
             <Grid item xs={3}>
@@ -246,8 +268,7 @@ const FormDangKyLanDau = () => {
             </Grid>
             <Grid item xs={3}>
               <InputAutocomplete
-                options={noiCapData}
-                optionLabel={option => option.ten}
+                optionsData={noiCapData}
                 name='cccdNlttNoiCap'
                 label='Nơi cấp'
                 register={register}
@@ -262,6 +283,7 @@ const FormDangKyLanDau = () => {
                 control={control}
                 errors={errors}
                 materialUiProps={{
+                  inputProps: ({ maxLength: '13' }),
                   label: 'Số điện thoại của NLTT'
                 }}
               />
@@ -282,14 +304,14 @@ const FormDangKyLanDau = () => {
                     control={control}
                     errors={errors}
                     materialUiProps={{
+                      inputProps: ({ maxLength: '20' }),
                       label: 'Mã hồ sơ khai LPTB'
                     }}
                   />
                 </Grid>
                 <Grid item xs={8}>
                   <InputAutocomplete
-                    options={noiCapData}
-                    optionLabel={option => option.ten}
+                    optionsData={coQuanCapLPTB}
                     name='coQuanCapLPTB'
                     label='Cơ quan cấp'
                     register={register}
@@ -303,14 +325,14 @@ const FormDangKyLanDau = () => {
                     control={control}
                     errors={errors}
                     materialUiProps={{
+                      inputProps: ({ maxLength: '20' }),
                       label: 'Số Seri phiếu KTCLXX'
                     }}
                   />
                 </Grid>
                 <Grid item xs={8}>
                   <InputAutocomplete
-                    options={noiCapData}
-                    optionLabel={option => option.ten}
+                    optionsData={coQuanCapKTCLXX}
                     name='coQuanCapKTCLXX'
                     label='Cơ quan cấp'
                     register={register}
@@ -320,8 +342,7 @@ const FormDangKyLanDau = () => {
 
                 <Grid item xs={4}>
                   <InputAutocomplete
-                    options={loaiXeData}
-                    optionLabel={option => option.tenLoai}
+                    optionsData={loaiXeData}
                     name='loaiXe'
                     label='Loại xe'
                     register={register}
@@ -330,8 +351,7 @@ const FormDangKyLanDau = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <InputAutocomplete
-                    options={nhanHieuData}
-                    optionLabel={option => option.ten}
+                    optionsData={nhanHieuData}
                     name='nhanHieu'
                     label='Nhãn hiệu'
                     register={register}
@@ -344,9 +364,10 @@ const FormDangKyLanDau = () => {
                     control={control}
                     errors={errors}
                     materialUiProps={{
+                      inputProps: ({ maxLength: '25' }),
                       label: 'Số khung'
                     }}
-                    onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
+                    updateString={(e, onChange) => onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
                   />
                 </Grid>
 
@@ -356,9 +377,10 @@ const FormDangKyLanDau = () => {
                     control={control}
                     errors={errors}
                     materialUiProps={{
+                      inputProps: ({ maxLength: '25' }),
                       label: 'Số máy 1'
                     }}
-                    onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
+                    updateString={(e, onChange) => onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
                   />
                 </Grid>
                 <Grid item xs={4}>
@@ -367,9 +389,10 @@ const FormDangKyLanDau = () => {
                     control={control}
                     errors={errors}
                     materialUiProps={{
+                      inputProps: ({ maxLength: '18' }),
                       label: 'Số loại'
                     }}
-                    onChange={(e, field) => field.onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
+                    updateString={(e, onChange) => onChange(e.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'))}
                   />
                 </Grid>
                 <Grid item xs={4}>
@@ -394,7 +417,6 @@ const FormDangKyLanDau = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <InputCheckbox
-                    name="kttmDacBiet"
                     label="Khu kinh tế thương mại đặc biệt"
                     color="primary"
                     handleCheckbox={checkboxChange}
@@ -402,18 +424,17 @@ const FormDangKyLanDau = () => {
                 </Grid>
                 {checkbox ? <Grid item xs={12}>
                   <InputAutocomplete
-                    options={khuKinhTeData}
-                    optionLabel={option => option.ten}
+                    optionsData={khuKinhTeData}
                     name='khuKinhTe'
                     label='Tên khu kinh tế'
                     register={register}
                     control={control}
+                    shouldUnregister={!checkbox}
                   />
                 </Grid> : ''}
                 <Grid item xs={12}>
                   <InputAutocomplete
-                    options={bienTheoTinhData}
-                    optionLabel={option => option.dauBienTheoTinh}
+                    optionsData={bienTheoTinhData}
                     name='bienTheoTinh'
                     label='Đầu biển theo tỉnh'
                     register={register}
@@ -422,8 +443,7 @@ const FormDangKyLanDau = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <InputAutocomplete
-                    options={bienQuocGiaData}
-                    optionLabel={option => option.dauBienQuocGia}
+                    optionsData={bienQuocGiaData}
                     name='bienQuocGia'
                     label='Đầu biển quốc gia'
                     register={register}
@@ -432,8 +452,7 @@ const FormDangKyLanDau = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <InputAutocomplete
-                    options={seriChuData}
-                    optionLabel={option => option.seriChu}
+                    optionsData={seriChuData}
                     name='seriChu'
                     label='Seri chữ'
                     register={register}
@@ -442,8 +461,7 @@ const FormDangKyLanDau = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <InputAutocomplete
-                    options={mauBienData}
-                    optionLabel={option => option.dienGiai}
+                    optionsData={mauBienData}
                     name='mauBien'
                     label='Màu biển'
                     register={register}

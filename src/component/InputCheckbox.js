@@ -21,7 +21,6 @@ const InputCheckbox = ({ name, label, color, checked, handleCheckbox }) => {
           inputProps={{ 'aria-label': 'primary checkbox' }}
         />}
         label={label}
-        name={name}
         // control={control}
         color={color}
       />

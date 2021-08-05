@@ -72,7 +72,8 @@ const theme = createTheme({
       },
       input: {
         // font: '-webkit-control',
-        padding: '6px 6px 7px 6px'
+        padding: '6px 6px 7px 6px',
+        lineHeight: 2
       }
     },
     MuiOutlinedInput: {
