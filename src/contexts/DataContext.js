@@ -1,169 +1,476 @@
 import { createContext, useEffect, useState } from "react";
-import requestOptions from "./RequestOptions";
-import React from 'react'
+import React from "react";
 
-export const DataContext = createContext()
+export const DataContext = createContext();
 
 const DataContextProvider = ({ children }) => {
-  const [quocGiaData, setQuocGiaData] = useState([])
-  const [tinhThanhData, setTinhThanhData] = useState([])
-  const [noiCapData, setNoiCapData] = useState([])
-  const [quanHuyenData, setQuanHuyenData] = useState([])
-  const [phuongXaData, setPhuongXaData] = useState([])
-  const [loaiXeData, setLoaiXeData] = useState([])
-  const [nhanHieuData, setNhanHieuData] = useState([])
-  const [khuKinhTeData, setKhuKinhTeData] = useState([])
-  const [bienTheoTinhData, setBienTheoTinhData] = useState([])
-  const [bienQuocGiaData, setBienQuocGiaData] = useState([])
-  const [seriChuData, setSeriChuData] = useState([])
-  const [mauBienData, setMauBienData] = useState([])
-  const [coQuanCapLPTB, setCoQuanCapLPTB] = useState([])
-  const [coQuanCapKTCLXX, setCoQuanCapKTCLXX] = useState([])
+    const [quocGiaList, setQuocGiaList] = useState([]);
+    const [tinhThanhList, setTinhThanhList] = useState([]);
+    const [noiCapList, setNoiCapList] = useState([]);
+    const [quanHuyenList, setQuanHuyenList] = useState([]);
+    const [phuongXaList, setPhuongXaList] = useState([]);
+    const [loaiXeList, setLoaiXeList] = useState([]);
+    const [nhanHieuList, setNhanHieuList] = useState([]);
+    const [khuKinhTeList, setKhuKinhTeList] = useState([]);
+    const [bienTheoTinhList, setBienTheoTinhList] = useState([]);
+    const [bienQuocGiaList, setBienQuocGiaList] = useState([]);
+    const [seriChuList, setSeriChuList] = useState([]);
+    const [mauBienList, setMauBienList] = useState([]);
+    const [coQuanCapLptbList, setCoQuanCapLptbList] = useState([]);
+    const [coQuanCapKtclxxList, setCoQuanCapKtclxxList] = useState([]);
 
-  const mapData = (dataMap) => {
-    return { value: dataMap.id, label: dataMap.ten }
-  }
+    const [apiKey, setApiKey] = useState("");
 
-  const mapDataLoaiXe = (dataMap) => {
-    return { value: dataMap.id, label: dataMap.tenLoai }
-  }
+    const [rpConfirm, setRpConfirm] = useState();
+    const [licensePlate, setLicensePlate] = useState();
+    const [paper, setPaper] = useState({});
 
-  const mapDataDauBien = (dataMap) => {
-    return { value: dataMap.id, label: dataMap.dauBienTheoTinh }
-  }
+    const [tableAllData, setTableAllData] = useState({});
 
-  const mapDataDauBienQG = (dataMap) => {
-    return { value: dataMap.id, label: dataMap.dauBienQuocGia }
-  }
+    const [snackbar, setSnackbar] = useState();
 
-  const mapDataSeri = (dataMap) => {
-    return { value: dataMap.id, label: dataMap.seriChu }
-  }
+    const [tableList, setTableList] = useState([]);
 
-  const mapDataMauBien = (dataMap) => {
-    return { value: dataMap.id, label: dataMap.dienGiai }
-  }
+    const mapData = (dataMap, valueKey, labelKey) => {
+        return dataMap.result.map((list) => ({
+            value: list[valueKey],
+            label: list[labelKey],
+        }));
+    };
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/GetDanhSachQuocGia?trangThaiKichHoat=2", requestOptions)
-      .then(response => response.json())
-      .then(data => setQuocGiaData(data.result?.map(mapData)))
-      .catch(error => console.log('error', error));
-  }, [])
+    // call api, logic để vào trong 1 hook
+    const getDataTable = (searchData) => {
+        if (searchData) {
+            let arrStr = "";
+            if (searchData.trangThaiHoSo) {
+                arrStr = searchData.trangThaiHoSo.map((value) => {
+                    return value.maThamso;
+                });
+            }
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListNoiCap", requestOptions)
-      .then(response => response.json())
-      .then(data => setNoiCapData(data.result?.map(mapData)))
-      .catch(error => console.log('error', error));
-  }, [])
+            fetch(
+                `http://10.0.25.184:8089/DkOtoFull/api/QuanLyHoSoXe/TimKiemHoSoXe?` +
+                    new URLSearchParams({
+                        limit: "1000",
+                        page: "1",
+                        trangThaiHoSo: arrStr,
+                        trangThaiDangKy: "01",
+                        bienSo: searchData.bienSo,
+                        soKhung: searchData.soKhung,
+                        soMay1: searchData.soMay1,
+                    }),
+                {
+                    headers: {
+                        api_key: apiKey,
+                    },
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    typeof data.result.data === "string"
+                        ? setSnackbar(data.result.data)
+                        : data.result
+                        ? setTableAllData(data.result)
+                        : setTableAllData([]);
+                })
+                .catch((error) => console.log("error", error));
+        } else {
+            fetch(
+                "http://10.0.25.184:8089/DkOtoFull/api/QuanLyHoSoXe/TimKiemHoSoXe?limit=1000&page=1",
+                {
+                    headers: {
+                        api_key: apiKey,
+                    },
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    typeof data.result.data === "string"
+                        ? setSnackbar(data.result.data)
+                        : data.result
+                        ? setTableAllData(data.result)
+                        : setTableAllData([]);
+                })
+                .catch((error) => console.log("error", error));
+        }
+    };
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListOtoMaLoaiXe", requestOptions)
-      .then(response => response.json())
-      .then(data => setLoaiXeData(data.result?.map(mapDataLoaiXe)))
-      .catch(error => console.log('error', error));
-  }, [])
+    //Get table data
+    useEffect(() => {
+        if (apiKey) {
+            getDataTable();
+        }
+    }, [apiKey]);
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListOtoMaNhanHieu", requestOptions)
-      .then(response => response.json())
-      .then(data => setNhanHieuData(data.result?.map(mapData)))
-      .catch(error => console.log('error', error));
-  }, [])
+    useEffect(() => {
+        if (apiKey) {
+            fetch(
+                "http://10.0.25.184:8089/DkOtoFull/api/GetListTrangThaiHoSo?limit=20&page=1&boQuaTrangThaiHoSo=04",
+                {
+                    headers: {
+                        api_key: apiKey,
+                    },
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => setTableList(data.result.data))
+                .catch((error) => console.log("error", error));
+        }
+    }, [apiKey]);
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/getListKhuKTDB?dvCsgtId=29", requestOptions)
-      .then(response => response.json())
-      .then(data => setKhuKinhTeData(data.result?.map(mapData)))
-      .catch(error => console.log('error', error));
-  }, [])
+    // inGiay hen
+    const printPaperApi = (data) => {
+        fetch("http://10.0.25.184:8089/DkOtoFull/api/InGiayHen", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                api_key: apiKey,
+            },
+            body: JSON.stringify(data),
+            redirect: "follow",
+        })
+            .then((response) => response.json())
+            .then((response) => setPaper(response))
+            .catch((error) => console.log("error", error));
+    };
+    // console.log("paper", paper);
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListDauBienTheoTinh/29", requestOptions)
-      .then(response => response.json())
-      .then(data => setBienTheoTinhData(data.result?.map(mapDataDauBien)))
-      .catch(error => console.log('error', error));
-  }, [])
+    // Cấp biển
+    const submitLicensePlate = (data) => {
+        fetch("http://10.0.25.184:8089/DkOtoFull/api/DangKyLanDau", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                api_key: apiKey,
+            },
+            body: JSON.stringify(data),
+            redirect: "follow",
+        })
+            .then((response) => response.json())
+            .then((response) => setLicensePlate(response))
+            .catch((error) => console.log("error", error));
+    };
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListDauBienQuocGia/1", requestOptions)
-      .then(response => response.json())
-      .then(data => setBienQuocGiaData(data.result?.map(mapDataDauBienQG)))
-      .catch(error => console.log('error', error));
-  }, [])
+    // console.log("licensePlate", licensePlate);
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListOtoSeriChu?trongNuoc=1&khuKtDbId=201", requestOptions)
-      .then(response => response.json())
-      .then(data => setSeriChuData(data.result?.map(mapDataSeri)))
-      .catch(error => console.log('error', error));
-  }, [])
+    //Chuẩn bị cấp biển
+    const submitConfirm = (data) => {
+        fetch("http://10.0.25.184:8089/DkOtoFull/api/ChuanBiCapBien", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                api_key: apiKey,
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => response.text())
+            .then((response) => setRpConfirm(response))
+            .catch((error) => console.log("error", error));
+    };
+    // console.log("rpConfirm", rpConfirm);
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListMauBien?maLoaiXeId=103&seriId=238", requestOptions)
-      .then(response => response.json())
-      .then(data => setMauBienData(data.result?.map(mapDataMauBien)))
-      .catch(error => console.log('error', error));
-  }, [])
+    useEffect(() => {
+        if (apiKey) {
+            fetch(
+                "http://10.0.25.184:8089/DkOtoFull/api/GetDanhSachQuocGia?trangThaiKichHoat=2",
+                {
+                    headers: {
+                        api_key: apiKey,
+                    },
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => setQuocGiaList(mapData(data, "id", "ten")))
+                .catch((error) => console.log("error", error));
+        }
+    }, [apiKey]);
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/getListCoQuanCap?coQuanCap=LPTB", requestOptions)
-      .then(response => response.json())
-      .then(data => setCoQuanCapLPTB(data.result?.map(mapData)))
-      .catch(error => console.log('error', error));
-  }, [])
+    useEffect(() => {
+        if (apiKey) {
+            fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListNoiCap", {
+                headers: {
+                    api_key: apiKey,
+                },
+            })
+                .then((response) => response.json())
+                .then((data) =>
+                    setNoiCapList(
+                        data.result.map((rp) => ({
+                            value: rp.id,
+                            label: rp.ten,
+                            loaiNoiCap: rp.loai,
+                        }))
+                    )
+                )
+                .catch((error) => console.log("error", error));
+        }
+    }, [apiKey]);
 
-  useEffect(() => {
-    fetch("http://10.0.25.184:8089/DkOtoFull/api/getListCoQuanCap?coQuanCap=PKTCLXX", requestOptions)
-      .then(response => response.json())
-      .then(data => setCoQuanCapKTCLXX(data.result?.map(mapData)))
-      .catch(error => console.log('error', error));
-  }, [])
+    useEffect(() => {
+        if (apiKey) {
+            fetch("http://10.0.25.184:8089/DkOtoFull/api/GetListOtoMaLoaiXe", {
+                headers: {
+                    api_key: apiKey,
+                },
+            })
+                .then((response) => response.json())
+                .then((data) =>
+                    setLoaiXeList(
+                        data.result.map((rp) => ({
+                            value: rp.id,
+                            label: `${rp.id}. ${rp.tenLoai}`,
+                            type: rp.dienGiaiNhomXe,
+                        }))
+                    )
+                )
+                .catch((error) => console.log("error", error));
+        }
+    }, [apiKey]);
 
-  const getTinhThanh = (id) => {
-    if (id) {
-      fetch("http://10.0.25.184:8089/DkOtoFull/api/GetDiaDanhHanhChinhTheoCapHanhChinh?capHanhChinh=1", requestOptions)
-        .then(response => response.json())
-        .then(data => setTinhThanhData(data.result?.map(mapData)))
-        .catch(error => console.log('error', error));
-    } else {
-      setTinhThanhData([])
-      setQuanHuyenData([])
-      setPhuongXaData([])
-    }
-  }
+    useEffect(() => {
+        if (apiKey) {
+            fetch(
+                "http://10.0.25.184:8089/DkOtoFull/api/GetListOtoMaNhanHieu",
+                {
+                    headers: {
+                        api_key: apiKey,
+                    },
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => setNhanHieuList(mapData(data, "id", "ten")))
+                .catch((error) => console.log("error", error));
+        }
+    }, [apiKey]);
 
-  const getQuanHuyen = (id) => {
-    if (id) {
-      fetch(`http://10.0.25.184:8089/DkOtoFull/api/GetDiaDanhHanhChinhTheoIdCha/${id}`, requestOptions)
-        .then(response => response.json())
-        .then(data => setQuanHuyenData(data.result?.map(mapData)))
-        .catch(error => console.log('error', error));
-    } else {
-      setQuanHuyenData([])
-      setPhuongXaData([])
-    }
-  }
+    useEffect(() => {
+        if (apiKey) {
+            fetch(
+                "http://10.0.25.184:8089/DkOtoFull/api/getListKhuKTDB?dvCsgtId=29",
+                {
+                    headers: {
+                        api_key: apiKey,
+                    },
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => setKhuKinhTeList(mapData(data, "id", "ten")))
+                .catch((error) => console.log("error", error));
+        }
+    }, [apiKey]);
 
-  const getPhuongXa = (id) => {
-    if (id) {
-      fetch(`http://10.0.25.184:8089/DkOtoFull/api/GetDiaDanhHanhChinhTheoIdCha/${id}`, requestOptions)
-        .then(response => response.json())
-        .then(data => setPhuongXaData(data.result?.map(mapData)))
-        .catch(error => console.log('error', error));
-    } else {
-      setPhuongXaData([])
-    }
-  }
+    const getBienTheoTinh = (id) => {
+        fetch(
+            `http://10.0.25.184:8089/DkOtoFull/api/GetListDauBienTheoTinh/${id}`,
+            {
+                headers: {
+                    api_key: apiKey,
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) =>
+                data.result
+                    ? setBienTheoTinhList(
+                          mapData(data, "id", "dauBienTheoTinh")
+                      )
+                    : setBienTheoTinhList([])
+            )
+            .catch((error) => console.log("error", error));
+    };
 
-  const todoDataContext = { quocGiaData, tinhThanhData, noiCapData, quanHuyenData, phuongXaData, getTinhThanh, getQuanHuyen, getPhuongXa, loaiXeData, nhanHieuData, khuKinhTeData, bienTheoTinhData, bienQuocGiaData, seriChuData, mauBienData, coQuanCapLPTB, coQuanCapKTCLXX }
+    const getBienQuocGia = (id) => {
+        fetch(
+            `http://10.0.25.184:8089/DkOtoFull/api/GetListDauBienQuocGia/${id}`,
+            {
+                headers: {
+                    api_key: apiKey,
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) =>
+                data.result
+                    ? setBienQuocGiaList(mapData(data, "id", "dauBienQuocGia"))
+                    : setBienQuocGiaList([])
+            )
+            .catch((error) => console.log("error", error));
+    };
 
-  return (
-    <DataContext.Provider value={todoDataContext}>
-      {children}
-    </DataContext.Provider>
-  )
-}
+    const getSeriChu = (quocGiaId, param) => {
+        fetch(
+            `http://10.0.25.184:8089/DkOtoFull/api/GetListOtoSeriChu?trongNuoc=${quocGiaId}&${param}`,
+            {
+                headers: {
+                    api_key: apiKey,
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) =>
+                data.result
+                    ? setSeriChuList(mapData(data, "id", "seriChu"))
+                    : setSeriChuList([])
+            )
+            .catch((error) => console.log("error", error));
+    };
+    const getMauBien = (maxLoai, seri) => {
+        fetch(
+            `http://10.0.25.184:8089/DkOtoFull/api/GetListMauBien?maLoaiXeId=${maxLoai}&seriId=${seri}`,
+            {
+                headers: {
+                    api_key: apiKey,
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) =>
+                data.result
+                    ? setMauBienList(
+                          data.result.map((rp) => ({
+                              value: rp.maThamso,
+                              label: rp.dienGiai,
+                              code: rp.id,
+                          }))
+                      )
+                    : setMauBienList([])
+            )
+            .catch((error) => console.log("error", error));
+    };
 
-export default DataContextProvider
+    useEffect(() => {
+        if (apiKey) {
+            fetch(
+                "http://10.0.25.184:8089/DkOtoFull/api/getListCoQuanCap?coQuanCap=LPTB",
+                {
+                    headers: {
+                        api_key: apiKey,
+                    },
+                }
+            )
+                .then((response) => response.json())
+                .then((data) =>
+                    setCoQuanCapLptbList(mapData(data, "ma", "ten"))
+                )
+                .catch((error) => console.log("error", error));
+        }
+    }, [apiKey]);
+
+    useEffect(() => {
+        if (apiKey) {
+            fetch(
+                "http://10.0.25.184:8089/DkOtoFull/api/getListCoQuanCap?coQuanCap=PKTCLXX",
+                {
+                    headers: {
+                        api_key: apiKey,
+                    },
+                }
+            )
+                .then((response) => response.json())
+                .then((data) =>
+                    setCoQuanCapKtclxxList(mapData(data, "ma", "ten"))
+                )
+                .catch((error) => console.log("error", error));
+        }
+    }, [apiKey]);
+
+    const getTinhThanh = () => {
+        fetch(
+            "http://10.0.25.184:8089/DkOtoFull/api/GetDiaDanhHanhChinhTheoCapHanhChinh?capHanhChinh=1",
+            {
+                headers: {
+                    api_key: apiKey,
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) =>
+                data.result
+                    ? setTinhThanhList(
+                          data.result.map((rp) => ({
+                              value: rp.id,
+                              label: rp.ten,
+                              code: rp.ma,
+                          }))
+                      )
+                    : setTinhThanhList([])
+            )
+            .catch((error) => console.log("error", error));
+    };
+
+    const getQuanHuyen = (id) => {
+        fetch(
+            `http://10.0.25.184:8089/DkOtoFull/api/GetDiaDanhHanhChinhTheoIdCha/${id}`,
+            {
+                headers: {
+                    api_key: apiKey,
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) =>
+                data.result
+                    ? setQuanHuyenList(mapData(data, "id", "ten"))
+                    : setQuanHuyenList([])
+            )
+            .catch((error) => console.log("error", error));
+    };
+
+    const getPhuongXa = (id) => {
+        fetch(
+            `http://10.0.25.184:8089/DkOtoFull/api/GetDiaDanhHanhChinhTheoIdCha/${id}`,
+            {
+                headers: {
+                    api_key: apiKey,
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) =>
+                data.result
+                    ? setPhuongXaList(mapData(data, "id", "ten"))
+                    : setPhuongXaList([])
+            )
+            .catch((error) => console.log("error", error));
+    };
+
+    const value = {
+        quocGiaList,
+        tinhThanhList,
+        noiCapList,
+        quanHuyenList,
+        phuongXaList,
+        getTinhThanh,
+        getQuanHuyen,
+        getPhuongXa,
+        getBienTheoTinh,
+        getBienQuocGia,
+        getSeriChu,
+        getMauBien,
+        loaiXeList,
+        nhanHieuList,
+        khuKinhTeList,
+        bienTheoTinhList,
+        bienQuocGiaList,
+        seriChuList,
+        mauBienList,
+        coQuanCapLptbList,
+        coQuanCapKtclxxList,
+        setApiKey,
+        submitConfirm,
+        rpConfirm,
+        submitLicensePlate,
+        licensePlate,
+        printPaperApi,
+        paper,
+        tableList,
+        tableAllData,
+        getDataTable,
+    };
+
+    return (
+        <DataContext.Provider value={value}>{children}</DataContext.Provider>
+    );
+};
+
+export default DataContextProvider;

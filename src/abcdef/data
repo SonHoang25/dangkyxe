@@ -1,0 +1,304 @@
+{
+  "canBo": {
+      "id": 7665
+  },
+  "otoChuSoHuu": {
+      "ten": "QWEWQWEWQEEWQ",
+      "namSinh": "2014-08-13T08:53:34.356Z",
+      "quocgiaId": {
+          "value": 1,
+          "label": "Việt Nam"
+      },
+      "diaChi": "An Châu, Châu Thành, An Giang, Việt Nam",
+      "idSo": "2121qweqweeqw",
+      "idNgayCap": "2021-08-04T08:53:00.000Z",
+      "idNoiCap": {
+          "value": "507",
+          "label": "Bình Định",
+          "loaiNoiCap": "01"
+      },
+      "soDienThoai": "221213213213"
+  },
+  "thanhPho": {
+      "value": 805,
+      "label": "An Giang",
+      "code": "67"
+  },
+  "quanHuyen": {
+      "value": 80519,
+      "label": "Châu Thành"
+  },
+  "phuongXa": {
+      "value": 8051909,
+      "label": "An Châu"
+  },
+  "nguoiLamThuTuc": {
+      "idSo": "qewqew213213",
+      "idNgayCap": "2021-08-13T08:53:34.405Z",
+      "idNoiCap": {
+          "value": "507",
+          "label": "Bình Định",
+          "loaiNoiCap": "01"
+      },
+      "soDienThoai": "123123213231"
+  },
+  "giayToLienQuan": {
+      "maHoSoKhaiLptb": "123qwe",
+      "coQuanCapLptb": {
+          "value": 329,
+          "label": "Tổng cục thuế"
+      },
+      "soSeriPhieuKtclxx": "123qwe",
+      "coQuanCapKtclxx": {
+          "value": 330,
+          "label": "Cục đăng kiểm"
+      }
+  },
+  "oto": {
+      "maLoaiXeId": {
+          "value": 102,
+          "label": "102 Ô tô con",
+          "type": "Ô tô con"
+      },
+      "nhanhieuLoaixeId": {
+          "value": 2,
+          "label": "ACCO"
+      },
+      "soKhung": "123qwe123eqw",
+      "soMay": "213qwe123eqw",
+      "soLoai": "123qwe123eqw"
+  },
+  "otoDangKy": {
+      "ngayDangKy": "2021-08-13T08:53:34.328Z",
+      "laKhuKtdb": true,
+      "dauBienTheoTinh": {
+          "value": 35,
+          "label": "67"
+      },
+      "dauBienQuocGia": {
+          "value": 41,
+          "label": "0"
+      },
+      "seriChu": {
+          "value": 238,
+          "label": "LB"
+      },
+      "mauBien": {
+          "value": 402,
+          "label": "Nền màu vàng, chữ và số màu đỏ"
+      },
+      "khuKtdbId": {
+          "value": 201,
+          "label": "Lao Bảo"
+      }
+  }
+}
+
+
+{
+    "otoChuSoHuu": {
+        "ten": "QWEWQWEWQEEWQ",
+        "quocgiaId": 1,
+        "diaChi": "Cát Hải, Phù Cát, Bình Định, Việt Nam",
+        "idSo": "2121qweqweeqw",
+        "idNoiCap": "507",
+        "soDienThoai": "221213213213",
+        "diadanhHanhchinhId": 5071311,
+        "namSinh": 2014,
+        "idNgayCap": "2021-7-4",
+        "loaiNoiCap": "01"
+    },
+    "oto": {
+        "soMay": "213qwe123eqw",
+        "soKhung": "123qwe123eqw",
+        "maLoaiXeId": 102,
+        "nhanhieuLoaixeId": 2,
+        "soLoai": "123qwe123eqw",
+        "coSoMay": true
+    },
+    "otoDangKy": {
+        "ngayDangKy": "2021-7-10",
+        "dauBienTheoTinh": "77",
+        "dauBienQuocGia": "0",
+        "seriChu": "LB",
+        "mauBien": 402,
+        "phuongThucNhanDangKy": "01",
+        "laKhuKtdb": 1,
+        "khuKtdbId": 201
+    },
+    "nguoiLamThuTuc": {
+        "idSo": "qewqew213213",
+        "idNoiCap": "507",
+        "soDienThoai": "123123213231",
+        "idNgayCap": "2021-7-13",
+        "loaiNoiCap": "01"
+    },
+    "giayToLienQuan": {
+        "coQuanCapLptb": 329,
+        "coQuanCapKtclxx": 330,
+        "maHoSoKhaiLptb": "123qwe",
+        "soSeriPhieuKtclxx": "123qwe"
+    }
+}
+
+
+//Map du lieu kieu cu
+let otoChuSoHuu = {
+            ...data.otoChuSoHuu,
+            quocgiaId: data.otoChuSoHuu.quocgiaId.value,
+            idNoiCap: data.otoChuSoHuu.idNoiCap.value,
+            diadanhHanhchinhId: data.phuongXa.value,//
+            namSinh: String(data.otoChuSoHuu.namSinh.getFullYear()),
+            idNgayCap:
+                data.otoChuSoHuu.idNgayCap.getFullYear() +
+                "-" +
+                data.otoChuSoHuu.idNgayCap.getMonth() +
+                "-" +
+                data.otoChuSoHuu.idNgayCap.getDate(),
+            loaiNoiCap: data.otoChuSoHuu.idNoiCap.loaiNoiCap,//
+        };
+        let oto = {
+            ...data.oto,
+            maLoaiXeId: data.oto.maLoaiXeId.value,
+            nhanhieuLoaixeId: data.oto.nhanhieuLoaixeId.value,
+            coSoMay: data.oto.soMay ? true : false,
+        };
+        let otoDangKy = {
+            ...date.otoDangKy,
+            ngayDangky:
+                data.otoDangKy.ngayDangky?.getFullYear() +
+                "-" +
+                data.otoDangKy.ngayDangky.getMonth() +
+                "-" +
+                data.otoDangKy.ngayDangky.getDate(),
+            dauBienTheoTinh: data.otoDangKy.dauBienTheoTinh.label,
+            dauBienQuocGia: data.otoDangKy.dauBienQuocGia.label,
+            phuongThucNhanDangKy: "01",
+            seriChu: data.otoDangKy.seriChu.label,
+            mauBien: String(data.otoDangKy.mauBien.value),
+            laKhuKtdb: data.otoDangKy.laKhuKtdb ? 1 : 0,
+        };
+        let nguoiLamThuTuc = {
+            ...data.nguoiLamThuTuc,
+            idNoiCap: data.nguoiLamThuTuc.idNoiCap.value,
+            idNgayCap:
+                data.nguoiLamThuTuc.idNgayCap.getFullYear() +
+                "-" +
+                data.nguoiLamThuTuc.idNgayCap.getMonth() +
+                "-" +
+                data.nguoiLamThuTuc.idNgayCap.getDate(),
+            loaiNoiCap: data.nguoiLamThuTuc.idNoiCap.loaiNoiCap,//
+        };
+        let giayToLienQuan = {
+            ...data.giayToLienQuan,
+            coQuanCapLptb: String(data.giayToLienQuan.coQuanCapLptb.value),
+            coQuanCapKtclxx: String(data.giayToLienQuan.coQuanCapKtclxx.value),
+        };
+
+
+{
+    "otoChuSoHuu": {
+        "ten": "HOANG ANH SON",
+        "namSinh": "1998-12-31T17:00:00.000Z",
+        "quocgiaId": 1,
+        "diaChi": "Quán Thánh, Ba Đình, Hà Nội, Việt Nam",
+        "idSo": "CCcd",
+        "idNgayCap": "2021-08-18T11:13:19.817Z",
+        "idNoiCap": "805",
+        "soDienThoai": "123"
+    },
+    "thanhPho": {
+        "value": 101,
+        "label": "Hà Nội",
+        "code": "29"
+    },
+    "quanHuyen": {
+        "value": 10101,
+        "label": "Ba Đình"
+    },
+    "phuongXa": {
+        "value": 1010125,
+        "label": "Quán Thánh"
+    },
+    "nguoiLamThuTuc": {
+        "idSo": "CCCD",
+        "idNgayCap": "2021-08-18T11:13:19.828Z",
+        "idNoiCap": "805",
+        "soDienThoai": "123"
+    },
+    "giayToLienQuan": {
+        "maHoSoKhaiLptb": "lptb123",
+        "coQuanCapLptb": "01",
+        "soSeriPhieuKtclxx": "ktclxx123",
+        "coQuanCapKtclxx": "01"
+    },
+    "oto": {
+        "maLoaiXeId": 102,
+        "nhanhieuLoaixeId": 5,
+        "soKhung": "sokhung123",
+        "soMay": "somay123somay",
+        "soLoai": "soloai123soloai"
+    },
+    "otoDangKy": {
+        "laKhuKtdb": false,
+        "dauBienTheoTinh": "29",
+        "dauBienQuocGia": "0",
+        "seriChu": "A",
+        "mauBien": "3",
+        "ngayDangky": "2021-08-18T11:13:19.760Z"
+    }
+}
+
+
+{
+    "otoChuSoHuu": {
+        "ten": "HOANG ANH SON",
+        "namSinh": "1998-12-31T17:00:00.000Z",
+        "quocgiaId": 1,
+        "diaChi": "Giảng Võ, Ba Đình, Hà Nội, Việt Nam",
+        "idSo": "CCcd",
+        "idNgayCap": "2021-08-18T11:13:19.817Z",
+        "idNoiCap": "805",
+        "soDienThoai": "9999999999"
+    },
+    "thanhPho": {
+        "value": 101,
+        "label": "Hà Nội",
+        "code": "29"
+    },
+    "quanHuyen": {
+        "value": 10101,
+        "label": "Ba Đình"
+    },
+    "phuongXa": {
+        "value": 1010119,
+        "label": "Giảng Võ"
+    },
+    "nguoiLamThuTuc": {
+        "idSo": "CCCD",
+        "idNgayCap": "2021-08-18T11:13:19.828Z",
+        "idNoiCap": "805",
+        "soDienThoai": "9999999999"
+    },
+    "giayToLienQuan": {
+        "maHoSoKhaiLptb": "lptb123",
+        "coQuanCapLptb": "01",
+        "soSeriPhieuKtclxx": "ktclxx123",
+        "coQuanCapKtclxx": "01"
+    },
+    "oto": {
+        "maLoaiXeId": 102,
+        "nhanhieuLoaixeId": 5,
+        "soKhung": "sokhung123",
+        "soMay": "somay123somay",
+        "soLoai": "soloai123soloai"
+    },
+    "otoDangKy": {
+        "laKhuKtdb": false,
+        "dauBienTheoTinh": "29",
+        "dauBienQuocGia": "0",
+        "seriChu": "A",
+        "mauBien": "0",
+        "ngayDangky": "2021-08-18T11:13:19.760Z"
+    }
+}
