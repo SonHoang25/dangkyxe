@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import { DataGrid as MuiDataGrid } from "@material-ui/data-grid";
 import { DataContext } from "../../../../contexts/DataContext";
-import { Button, Grid, makeStyles, withStyles } from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core";
+import CustomToolbar from "./CustomToolbar";
 
 const columns = [
     {
@@ -57,27 +58,6 @@ const DataGrid = withStyles({
     },
 })(MuiDataGrid);
 
-const CustomToolbar = ({ rowSelect }) => {
-    return (
-        <Grid
-            container
-            // spacing={3}
-            justifyContent="flex-end"
-            alignItems="flex-end"
-        >
-            <Grid item>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={rowSelect}
-                >
-                    Hiệu chỉnh bổ sung
-                </Button>
-            </Grid>
-        </Grid>
-    );
-};
-
 const useStyles = makeStyles({
     root: {
         "& .theme--01": {
@@ -102,6 +82,8 @@ const DataTable = () => {
 
     //contexts
     const { tableAllData } = useContext(DataContext);
+
+    const hanldeOnClick = () => {};
 
     return (
         <DataGrid
@@ -128,14 +110,7 @@ const DataTable = () => {
             }}
             pagination
             components={{ Toolbar: CustomToolbar }}
-            componentsProps={{ toolbar: { rowSelect } }}
-
-            // paginationMode="server"
-            // rowCount={tableAllData.currentTotalRecord}
-            // pageSize={data.pageSize}
-            // onPageChange={(data) => {
-            //     updateData("page", data.page + 1);
-            // }}
+            componentsProps={{ toolbar: { rowSelect, hanldeOnClick } }}
         />
     );
 };

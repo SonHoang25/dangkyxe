@@ -26,6 +26,7 @@ const InputField = (props) => {
                     onBlur={onBlur}
                     value={value}
                     disabled={disabled}
+                    fullWidth={true}
                     onChange={(e) => {
                         updateString
                             ? updateString(e, onChange)

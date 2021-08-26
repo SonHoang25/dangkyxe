@@ -202,6 +202,11 @@ const theme = createTheme({
                 backgroundColor: "inherit",
             },
         },
+        MuiAppBar: {
+            colorPrimary: {
+                backgroundColor: "#184a85",
+            },
+        },
     },
 });
 

@@ -7,9 +7,9 @@ import { DataContext } from "../../../../contexts/DataContext";
 import useStyles from "../style";
 import InputAutocompleteChip from "./InputAutocompleteChip";
 
-const SearchForm = ({ tableList }) => {
+const SearchForm = () => {
     const [showSearch, setShowSearch] = useState(false);
-    const { getDataTable } = useContext(DataContext);
+    const { getDataTable, tableList } = useContext(DataContext);
 
     const classes = useStyles();
 

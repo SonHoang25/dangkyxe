@@ -361,21 +361,6 @@ const FormDangKyLanDau = () => {
         });
     }, [quocGiaWatcher, loaiXeWatcher, nhanHieuWatcher]);
 
-    // const mergeData = (data) => {
-    //     merge(data, {
-    //         canBo: {
-    //             id: 7571,
-    //         },
-    //         otoChuSoHuu: {
-    //             loaiNoiCap: data.otoChuSoHuu.idNoiCap.loaiNoiCap,
-    //             diadanhHanhchinhId: data.phuongXa.value,
-    //         },
-    //         nguoiLamThuTuc: {
-    //             loaiNoiCap: data.nguoiLamThuTuc.idNoiCap.loaiNoiCap,
-    //         },
-    //     });
-    // };
-
     const onSubmitConfirm = (data) => {
         _.merge(data, {
             canBo: {
